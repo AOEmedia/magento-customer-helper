@@ -26,7 +26,7 @@ $installer->startSetup();
 
 $installer->run("
 
-    CREATE TABLE IF NOT EXISTS {$this->getTable('helpcustomers_faillog')} (
+    CREATE TABLE IF NOT EXISTS {$this->getTable('mk_helpcustomers/faillog')} (
       `faillog_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
       `store_id` smallint(5) unsigned NOT NULL COMMENT 'Store Id',
       `customer_id` int(10) unsigned NOT NULL,
@@ -42,14 +42,36 @@ $installer->run("
 $connection = $installer->getConnection();
 
 $connection->addIndex(
-    $this->getTable('helpcustomers_faillog'),
+    $this->getTable('mk_helpcustomers/faillog'),
     $installer->getIdxName(
-        $this->getTable('helpcustomers_faillog'),
+        $this->getTable('mk_helpcustomers/faillog'),
         array('customer_id'),
         Varien_Db_Adapter_Interface::INDEX_TYPE_UNIQUE
     ),
     array('customer_id'),
     Varien_Db_Adapter_Interface::INDEX_TYPE_UNIQUE
+);
+
+$installer->getConnection()->addForeignKey(
+    $installer->getFkName('mk_helpcustomers/faillog', 'store_id', 'core/store', 'store_id'),
+    $installer->getTable('mk_helpcustomers/faillog'),
+    'store_id',
+    $installer->getTable('core/store'),
+    'store_id',
+    Varien_Db_Ddl_Table::ACTION_CASCADE
+);
+
+$connection->addForeignKey(
+    $installer->getFkName(
+        'mk_helpcustomers/faillog',
+        'customer_id',
+        'customer/entity',
+        'entity_id'
+    ),
+    $installer->getTable('mk_helpcustomers/faillog'),
+    'customer_id',
+    $installer->getTable('customer/entity'),
+    'entity_id'
 );
 
 $installer->endSetup();

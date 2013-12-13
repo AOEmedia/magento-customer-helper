@@ -4,7 +4,7 @@
     <sections>
         <customer>
             <groups>
-                <helpcustomers translate="label">
+                <helpcustomers translate="label" module="mk_helpcustomers">
                     <label>Help Customers Extension</label>
                     <sort_order>50</sort_order>
                     <show_in_default>1</show_in_default>
@@ -30,6 +30,13 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </logon_fail_email_template>
+                        <threshold translate="label comment">
+                            <label>Failed login attempts threshold</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>Defines minimal number of login attempts to send email, default is 5</comment>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                        </threshold>
                     </fields>
                 </helpcustomers>
             </groups>

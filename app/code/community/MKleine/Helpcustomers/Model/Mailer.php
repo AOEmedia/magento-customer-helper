@@ -18,19 +18,23 @@
  * @copyright   Copyright (c) 2013 Matthias Kleine (http://mkleine.de)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class MKleine_Helpcustomers_Model_Mailer extends Mage_Core_Model_Abstract
+class MKleine_Helpcustomers_Model_Mailer
 {
-    const XML_PATH_EXTENSION_ACTIVE = 'customer/helpcustomers/active';
+    const XML_PATH_EXTENSION_ACTIVE          = 'customer/helpcustomers/active';
     const XML_PATH_LOGON_FAIL_EMAIL_TEMPLATE = 'customer/helpcustomers/logon_fail_email_template';
+    const XML_PATH_THRESHOLD                 = 'customer/helpcustomers/threshold';
 
     public function sendMails()
     {
-        $timeGap = Mage::getModel('core/date')->Date(null, time() - 10 * 60);
+        $timeGap = Mage::getModel('core/date')->date(null, time() - 10 * 60);
+
+        $threshold = Mage::getStoreConfig(self::XML_PATH_THRESHOLD);
 
         /** @var $collection MKleine_Helpcustomers_Model_Mysql4_Faillog_Collection */
         $collection = Mage::getModel('mk_helpcustomers/faillog')->getCollection();
-        $collection->addFieldToFilter('updated_at', array('lt' => $timeGap));
-        $collection->load();
+        $collection->addFieldToFilter('updated_at', array('lt' => $timeGap))
+            ->addFieldToFilter('fail_count', array('gte' => $threshold))
+            ->load();
 
         /** @var $failItem MKleine_Helpcustomers_Model_Faillog */
         foreach ($collection as $failItem) {
@@ -46,7 +50,7 @@ class MKleine_Helpcustomers_Model_Mailer extends Mage_Core_Model_Abstract
 
                 if ($customer->getId()) {
                     /** @var $mailer Mage_Core_Model_Email_Template_Mailer */
-                    $mailer = Mage::getModel('core/email_template_mailer');
+                    $mailer    = Mage::getModel('core/email_template_mailer');
                     $emailInfo = Mage::getModel('core/email_info');
 
                     $emailInfo->addTo($customer->getEmail(), $customer->getName());
@@ -59,7 +63,7 @@ class MKleine_Helpcustomers_Model_Mailer extends Mage_Core_Model_Abstract
                     $mailer->setTemplateId($mailTemplateId);
 
                     $mailer->setTemplateParams(array(
-                        'customer' => $customer,
+                        'customer'  => $customer,
                         'failcount' => $failItem->getFailCount()
                     ));
 
@@ -69,12 +73,11 @@ class MKleine_Helpcustomers_Model_Mailer extends Mage_Core_Model_Abstract
                     $failItem->delete();
 
                     Mage::dispatchEvent('mk_helpcustomers_fail_login_mail_sent', array(
-                        'customer' => $customer,
+                        'customer'   => $customer,
                         'fail_count' => $failItem->getFailCount(),
-                        'mailer' => $mailer
+                        'mailer'     => $mailer
                     ));
                 }
-
             }
         }
 

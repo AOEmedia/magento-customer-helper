@@ -24,11 +24,12 @@
                     </faillog>
                 </entities>
             </mk_helpcustomers_mysql4>
-            <customer>
-                <rewrite>
-                    <customer>MKleine_Helpcustomers_Model_Customer</customer>
-                </rewrite>
-            </customer>
+            <!-- commented because of own customer model in project -->
+            <!--<customer>-->
+                <!--<rewrite>-->
+                    <!--<customer>MKleine_Helpcustomers_Model_Customer</customer>-->
+                <!--</rewrite>-->
+            <!--</customer>-->
         </models>
         <helpers>
             <mk_helpcustomers>
@@ -40,20 +41,7 @@
                 <setup>
                     <module>MKleine_Helpcustomers</module>
                 </setup>
-                <connection>
-                    <use>core_setup</use>
-                </connection>
             </helpcustomers_setup>
-            <helpcustomers_write>
-                <connection>
-                    <use>core_write</use>
-                </connection>
-            </helpcustomers_write>
-            <helpcustomers_read>
-                <connection>
-                    <use>core_read</use>
-                </connection>
-            </helpcustomers_read>
         </resources>
         <template>
             <email>
@@ -106,6 +94,7 @@
             <helpcustomers>
                 <active>1</active>
                 <logon_fail_email_template>customer_helpcustomers_logon_fail_email_template</logon_fail_email_template>
+                <threshold>5</threshold>
             </helpcustomers>
         </customer>
     </default>
